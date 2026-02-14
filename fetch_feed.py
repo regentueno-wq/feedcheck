@@ -847,7 +847,6 @@ def fetch_all_feeds():
     from bs4 import BeautifulSoup
     from datetime import datetime, timezone
     
-    # Matsucoさん専用のソース一覧
     RSS_URLS = {
         "WIRED JAPAN": "https://wired.jp/rss/rssf/",
         "Every": "https://every.to/feed",
@@ -855,8 +854,8 @@ def fetch_all_feeds():
         "Kevin Kelly": "https://kk.org/the-technium/feed/",
         "Moltbook": "https://moltbook.xyz/feed",
         "落合陽一": "https://note.com/ochyai/rss",
-        "Anthropic": "https://www.anthropic.com/index.xml", # ダリオ・アモデイ
-        "Ted Chiang": "https://muckrack.com/ted-chiang/articles.rss" # テッド・チャン
+        "Dario Amodei": "https://www.anthropic.com/index.xml",
+        "Ted Chiang": "https://muckrack.com/ted-chiang/articles.rss"
     }
     
     all_items = []
@@ -864,12 +863,10 @@ def fetch_all_feeds():
         try:
             feed = feedparser.parse(url)
             for entry in feed.entries[:5]:
-                # 画像の抽出
                 img_url = ""
-                # 1. RSSのタグ(media:content)から探す
+                # 画像の抽出ロジック
                 if 'media_content' in entry:
                     img_url = entry.media_content[0]['url']
-                # 2. 本文(summaryやcontent)の中の<img>タグから探す
                 if not img_url:
                     soup = BeautifulSoup(entry.get("summary", "") + entry.get("description", ""), 'html.parser')
                     img = soup.find('img')
@@ -889,17 +886,20 @@ def fetch_all_feeds():
     return all_items
 
 def generate_html(all_items, output_path):
-    # (中略: 計算部分は同じです)
+    """色分けと画像表示を含むHTML生成"""
+    # ... (前述の greeting や date_str の計算コードをここに維持) ...
     
-    # ニュース項目の生成（画像ありVer）
+    # アイテムごとのHTML（画像と色分けタグ付き）
     items_html = ""
     for item in all_items:
         img_tag = f'<img src="{item["image"]}" class="item-img">' if item["image"] else ""
+        # ソース名から半角スペースを抜いてCSSクラス名にする
+        safe_source = item['source'].replace(' ', '-')
         items_html += f"""
         <div class="item" data-source="{item['source']}">
             {img_tag}
             <div class="item-meta">
-                <span class="source-tag tag-{item['source'].replace(' ', '-')}">{item['source']}</span>
+                <span class="source-tag tag-{safe_source}">{item['source']}</span>
                 <span class="time">{item['time_ago']}</span>
             </div>
             <a href="{item['link']}" class="item-title" target="_blank">{item['title']}</a>
@@ -907,28 +907,46 @@ def generate_html(all_items, output_path):
         </div>
         """
 
-    # --- デザインの復活（色分けCSS） ---
     html_content = f"""
     <!DOCTYPE html>
     <html lang="ja">
     <head>
         <style>
-            /* ソースごとの色分け */
+            /* ソースごとの色分け設定 */
             .tag-WIRED-JAPAN {{ background: #E0F2F1; color: #00796B; }}
-            .tag-落合陽一 {{ background: #FCE4EC; color: #C2185B; }}
-            .tag-Hard-Fork {{ background: #FFF3E0; color: #E65100; }}
+            .tag-落合陽一 {{ background: #FFF3E0; color: #E65100; }}
+            .tag-Hard-Fork {{ background: #FCE4EC; color: #C2185B; }}
             .tag-Every {{ background: #E3F2FD; color: #1976D2; }}
             .tag-Moltbook {{ background: #F3E5F5; color: #7B1FA2; }}
-            .tag-Anthropic {{ background: #EFEBE9; color: #5D4037; }}
-            
-            /* 画像のスタイル */
+            .tag-Kevin-Kelly {{ background: #EDE7F6; color: #512DA8; }}
+            .tag-Dario-Amodei {{ background: #F1F8E9; color: #33691E; }}
+            .tag-Ted-Chiang {{ background: #EFEBE9; color: #4E342E; }}
+
             .item-img {{ width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; }}
-            .item {{ margin-bottom: 52px; border-bottom: 1px solid #F5F2EB; padding-bottom: 32px; }}
-            /* (他の既存スタイルはそのまま維持) */
+            /* ... (他のCSSスタイル) ... */
         </style>
-        ...
     </head>
-    ...
+    <body>
+        <div class="container">
+            <div class="refresh-container">
+                <button class="refresh-btn" onclick="triggerRefresh()">手帖を最新に更新する</button>
+            </div>
+            <div id="items-container">{items_html}</div>
+        </div>
+        <script>
+        function triggerRefresh() {{
+            const hookUrl = "https://api.netlify.com/build_hooks/698fddd90daa0f765f996b27";
+            if (confirm("最新の情報を取得しますか？")) {{
+                fetch(hookUrl, {{ method: 'POST' }}).then(() => alert("職人が更新を開始しました！"));
+            }}
+        }}
+        </script>
+    </body>
     </html>
     """
-    # (以下、保存処理とtriggerRefreshは以前と同じ)
+    with open(output_path, "w", encoding="utf-8") as f:
+        f.write(html_content)
+
+if __name__ == "__main__":
+    items = fetch_all_feeds()
+    generate_html(items, "index.html")
