@@ -1049,10 +1049,25 @@ body {{
     .season-card {{ padding: 16px 18px; }}
     .season-kou {{ font-size: 16px; }}
 }}
+/* 1. これを <style> の最後の方（ </style> の直前）に貼る */
+.refresh-container { text-align: right; margin-bottom: 24px; }
+.refresh-btn {
+    padding: 6px 14px;
+    border: 1px solid #ECE6D8;
+    background: #FAF9F6;
+    color: #A08060;
+    border-radius: 20px;
+    font-size: 11px;
+    cursor: pointer;
+    font-family: "Zen Maru Gothic", sans-serif;
+}
 </style>
 </head>
 <body>
 <div class="container">
+<div class="refresh-container">
+    <button class="refresh-btn" onclick="triggerRefresh()">手帖を最新に更新する</button>
+</div>
     <div class="header">
         <div class="greeting">{greeting}</div>
         <div class="date">{date_str}（{day_str}）　{time_str} 取得</div>
@@ -1086,6 +1101,16 @@ body {{
 </div>
 
 <script>
+// 3. これを <script> のすぐ下に貼る
+function triggerRefresh() {
+    const hookUrl = "https://api.netlify.com/build_hooks/698fddd90daa0f765f996b27";
+    
+    if (confirm("最新の情報を取得しにいきます。完了まで1〜2分かかりますが、よろしいですか？")) {
+        fetch(hookUrl, { method: 'POST' })
+            .then(() => alert("職人が作業を開始しました！少し待ってから再読み込みしてください。"))
+            .catch(() => alert("エラーが発生しました。"));
+    }
+}
 // ソース名のグループマッピング
 const sourceGroups = {{}};
 document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {{
