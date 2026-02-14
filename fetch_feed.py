@@ -696,11 +696,10 @@ SOURCE_COLORS = {
 
 def generate_html(all_items, output_path):
     """全アイテムからHTMLページを生成"""
-
     all_items.sort(key=lambda x: x["date"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
 
     now_jst = datetime.now(JST)
-    date_str = now_jst.strftime("%Y年%-m月%-d日")
+    date_str = now_jst.strftime("%Y年%m月%d日")
     day_names = ["月", "火", "水", "木", "金", "土", "日"]
     day_str = day_names[now_jst.weekday()]
     time_str = now_jst.strftime("%-H:%M")
@@ -713,359 +712,38 @@ def generate_html(all_items, output_path):
     else:
         greeting = "こんばんは、Matsuco\U0001F44B\U0001F3FB"
 
-    # 二十四節気・七十二候
     sekki, kou_name, kou_reading, seasonal_desc = get_seasonal_message()
-
+    
+    # ニュース項目の生成
+    items_html = ""
     source_counts = {}
+    en_count = 0
     for item in all_items:
-        sk = item["source_key"]
-        source_counts[sk] = source_counts.get(sk, 0) + 1
-
-    cards_html = ""
-    for idx, item in enumerate(all_items):
-        src = SOURCES.get(item["source_key"], {})
-        is_en = item.get("original_lang") == "en"
-        sc = SOURCE_COLORS.get(item["source_key"], {"text": "#888", "bg": "#F8F8F8", "badge_bg": "#EEE"})
-        src_text = sc["text"]
-        src_bg = sc["bg"]
-        src_badge_bg = sc["badge_bg"]
-
-        if is_en and item.get("title_ja"):
-            display_title = item["title_ja"]
-            original_line = f'<p class="original-text">原文: {html.escape(item.get("title_en", ""))}</p>'
-        else:
-            display_title = item["title"]
-            original_line = ""
-
-        display_summary = item.get("summary_ja", item["summary"]) if is_en else item["summary"]
-
-        title_escaped = html.escape(display_title)
-        summary_escaped = html.escape(display_summary)
-        link = html.escape(item.get("link", "#"))
-        badge_name = src.get("name", "")
-        platform = src.get("platform", "")
-        time_ago_str = item.get("time_ago", "")
-
-        lang_badge = ""
-        if is_en:
-            lang_badge = '<span class="lang-badge">翻訳</span>'
-
-        # 画像部分
-        image_url = item.get("image", "")
-        image_html = ""
-        if image_url:
-            image_escaped = html.escape(image_url)
-            image_html = f'<div class="card-image"><img src="{image_escaped}" alt="" loading="lazy" onerror="this.parentElement.style.display=\'none\'"></div>'
-
-        cards_html += f"""
-        <a href="{link}" target="_blank" rel="noopener" class="card" data-source="{item['source_key']}" style="background: {src_bg}">
-            {image_html}
-            <div class="card-content">
-                <div class="card-header">
-                    <span class="source-badge" style="color: {src_text}; background: {src_badge_bg}">{badge_name}</span>
-                    <span class="meta">{platform}　{time_ago_str}</span>
-                </div>
-                <h3 class="card-title">{title_escaped}</h3>
-                {original_line}
-                {"<p class='card-summary'>" + summary_escaped + "</p>" if summary_escaped else ""}
-                <div class="card-footer">
-                    {lang_badge}
-                    <span class="read-more">つづきを読む →</span>
-                </div>
+        source = item.get("source", "不明")
+        source_counts[source] = source_counts.get(source, 0) + 1
+        if item.get("is_translated"):
+            en_count += 1
+        
+        items_html += f"""
+        <div class="item" data-source="{source}">
+            <div class="item-meta">
+                <span class="source-tag">{source}</span>
+                <span class="time">{item['time_ago']}</span>
             </div>
-        </a>
+            <a href="{item['link']}" class="item-title" target="_blank">{item['title']}</a>
+            <div class="item-summary">{item['summary']}</div>
+            <a href="{item['link']}" class="read-more" target="_blank">つづきを読む →</a>
+        </div>
         """
 
-    # フィルターボタン
-    filter_buttons = '<button class="filter-btn active" data-filter="all">ぜんぶ</button>'
-    seen_source_names = set()
-    for sk, src in SOURCES.items():
-        count = source_counts.get(sk, 0)
-        if count > 0 and src["name"] not in seen_source_names:
-            seen_source_names.add(src["name"])
-            sc = SOURCE_COLORS.get(sk, {"text": "#888", "bg": "#F8F8F8", "badge_bg": "#EEE"})
-            total = sum(source_counts.get(k, 0) for k, s in SOURCES.items() if s["name"] == src["name"])
-            filter_buttons += f'<button class="filter-btn" data-filter="{sk}" data-color="{sc["badge_bg"]}" data-text="{sc["text"]}" style="background: {sc["badge_bg"]}; color: {sc["text"]}">{src["name"]} <span style="opacity:0.6;font-size:10px">{total}</span></button>'
+    # フィルタボタンの生成
+    filter_buttons = '<div class="filters" id="filters">'
+    filter_buttons += '<button class="filter-btn active" data-filter="all">ぜんぶ</button>'
+    for source, count in sorted(source_counts.items(), key=lambda x: x[1], reverse=True):
+        filter_buttons += f'<button class="filter-btn" data-filter="{source}">{source} <small>{count}</small></button>'
+    filter_buttons += '</div>'
 
-    en_count = sum(1 for i in all_items if i.get("original_lang") == "en")
-
-    html_content = f"""<!DOCTYPE html>
-<html lang="ja">
-<head>
-<meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>けさの手帖 — {date_str}</title>
-<style>
-@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
-
-* {{ margin: 0; padding: 0; box-sizing: border-box; }}
-
-body {{
-    font-family: "Zen Maru Gothic", "Noto Serif JP", "Hiragino Kaku Gothic ProN", sans-serif;
-    background: #FFFFFF;
-    color: #3A3A3A;
-    line-height: 1.8;
-    letter-spacing: 0.03em;
-}}
-
-.container {{
-    max-width: 640px;
-    margin: 0 auto;
-    padding: 52px 28px 80px;
-}}
-
-/* === ヘッダー === */
-.header {{
-    margin-bottom: 32px;
-}}
-
-.greeting {{
-    font-size: 26px;
-    font-weight: 700;
-    color: #2A2A2A;
-    line-height: 1.4;
-    margin-bottom: 6px;
-    font-family: "Noto Serif JP", serif;
-}}
-
-.header .date {{
-    font-size: 13px;
-    color: #999;
-    letter-spacing: 0.08em;
-}}
-
-/* === 季節カード === */
-.season-card {{
-    background: linear-gradient(135deg, #fafaf5 0%, #f5f0e8 100%);
-    border-radius: 14px;
-    padding: 20px 24px;
-    margin-bottom: 32px;
-    border: 1px solid #ece6d8;
-}}
-
-.season-sekki {{
-    font-size: 11px;
-    color: #A08060;
-    letter-spacing: 0.1em;
-    margin-bottom: 4px;
-}}
-
-.season-kou {{
-    font-size: 18px;
-    font-weight: 600;
-    color: #5A4A3A;
-    font-family: "Noto Serif JP", serif;
-    margin-bottom: 2px;
-}}
-
-.season-reading {{
-    font-size: 12px;
-    color: #B0A090;
-    margin-bottom: 8px;
-}}
-
-.season-desc {{
-    font-size: 13px;
-    line-height: 1.7;
-    color: #7A6A5A;
-}}
-
-/* === 統計 === */
-.stats {{
-    display: flex;
-    gap: 20px;
-    margin-bottom: 20px;
-    font-size: 12px;
-    color: #AAA;
-}}
-
-/* === フィルター === */
-.filters {{
-    display: flex;
-    gap: 8px;
-    margin-bottom: 36px;
-    flex-wrap: wrap;
-}}
-
-.filter-btn {{
-    padding: 5px 14px;
-    border: none;
-    border-radius: 20px;
-    background: #F5F5F5;
-    color: #777;
-    font-family: inherit;
-    font-size: 12px;
-    letter-spacing: 0.04em;
-    cursor: pointer;
-    transition: all 0.2s;
-}}
-
-.filter-btn.active {{
-    background: #3A3A3A !important;
-    color: #FFF !important;
-}}
-
-.filter-btn:hover:not(.active) {{
-    opacity: 0.8;
-}}
-
-/* === カード === */
-.feed {{
-    display: flex;
-    flex-direction: column;
-    gap: 0px;
-}}
-
-.card {{
-    display: flex;
-    text-decoration: none;
-    color: inherit;
-    padding: 18px 20px;
-    margin-bottom: 12px;
-    border-radius: 12px;
-    border: none;
-    transition: transform 0.12s, box-shadow 0.12s;
-    gap: 16px;
-    align-items: flex-start;
-}}
-
-.card:hover {{
-    transform: translateY(-2px);
-    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
-}}
-
-.card-image {{
-    flex-shrink: 0;
-    width: 100px;
-    height: 72px;
-    border-radius: 8px;
-    overflow: hidden;
-    background: rgba(0,0,0,0.04);
-}}
-
-.card-image img {{
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    display: block;
-}}
-
-.card-content {{
-    flex: 1;
-    min-width: 0;
-}}
-
-.card-header {{
-    display: flex;
-    justify-content: space-between;
-    align-items: baseline;
-    margin-bottom: 4px;
-    gap: 12px;
-}}
-
-.source-badge {{
-    font-size: 10px;
-    font-weight: 600;
-    letter-spacing: 0.06em;
-    padding: 2px 10px;
-    border-radius: 12px;
-    display: inline-block;
-    white-space: nowrap;
-}}
-
-.meta {{
-    font-size: 11px;
-    color: #BBB;
-    white-space: nowrap;
-}}
-
-.card-title {{
-    font-size: 15px;
-    font-weight: 500;
-    line-height: 1.6;
-    margin-bottom: 4px;
-    color: #2A2A2A;
-    font-family: "Noto Serif JP", serif;
-}}
-
-.card-summary {{
-    font-size: 13px;
-    line-height: 1.7;
-    color: #888;
-    margin-bottom: 6px;
-}}
-
-.original-text {{
-    font-size: 11px;
-    color: #BBB;
-    margin-bottom: 4px;
-    line-height: 1.4;
-}}
-
-.card-footer {{
-    display: flex;
-    align-items: center;
-    gap: 10px;
-}}
-
-.lang-badge {{
-    display: inline-block;
-    padding: 1px 7px;
-    border-radius: 10px;
-    font-size: 10px;
-    color: #4A7FA5;
-    background: #EDF4F8;
-    letter-spacing: 0.04em;
-}}
-
-.read-more {{
-    font-size: 12px;
-    color: #BBB;
-    margin-left: auto;
-}}
-
-/* === フッター === */
-.footer {{
-    margin-top: 56px;
-    padding-top: 24px;
-    text-align: center;
-    font-size: 11px;
-    color: #CCC;
-}}
-
-.footer-dots {{
-    letter-spacing: 0.4em;
-    margin-bottom: 12px;
-    color: #DDD;
-}}
-
-/* === モバイル === */
-@media (max-width: 600px) {{
-    .container {{ padding: 36px 18px 60px; }}
-    .greeting {{ font-size: 22px; }}
-    .card {{ padding: 14px 16px; margin-bottom: 10px; flex-direction: column; gap: 10px; }}
-    .card-image {{ width: 100%; height: 160px; }}
-    .card-title {{ font-size: 15px; }}
-    .season-card {{ padding: 16px 18px; }}
-    .season-kou {{ font-size: 16px; }}
-}}
-/* 1. これを <style> の最後の方（ </style> の直前）に貼る */
-.refresh-container { text-align: right; margin-bottom: 24px; }
-.refresh-btn {
-    padding: 6px 14px;
-    border: 1px solid #ECE6D8;
-    background: #FAF9F6;
-    color: #A08060;
-    border-radius: 20px;
-    font-size: 11px;
-    cursor: pointer;
-    font-family: "Zen Maru Gothic", sans-serif;
-}
-</style>
-</head>
-<body>
-<div class="container">
-# 1067行目付近、<div class="container"> から下をこれに差し替え
+    # HTML全体の組み立て
     html_content = f"""
     <!DOCTYPE html>
     <html lang="ja">
@@ -1080,14 +758,25 @@ body {{
             .container {{ max-width: 640px; margin: 0 auto; padding: 52px 28px 80px; }}
             .refresh-container {{ text-align: right; margin-bottom: 24px; }}
             .refresh-btn {{ padding: 6px 14px; border: 1px solid #ECE6D8; background: #FAF9F6; color: #A08060; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s ease; }}
+            .refresh-btn:hover {{ background: #F0EDE5; }}
             .header {{ margin-bottom: 48px; border-bottom: 1px solid #F5F2EB; padding-bottom: 24px; }}
             .greeting {{ font-size: 24px; font-weight: 500; color: #5C5446; margin-bottom: 8px; }}
             .date {{ font-size: 13px; color: #9A9284; }}
-            .season-card {{ background: #FAF9F6; border-radius: 16px; padding: 32px; margin-bottom: 48px; position: relative; overflow: hidden; }}
+            .season-card {{ background: #FAF9F6; border-radius: 16px; padding: 32px; margin-bottom: 48px; }}
             .season-sekki {{ font-size: 13px; color: #A08060; margin-bottom: 8px; font-weight: 500; }}
             .season-kou {{ font-size: 22px; color: #5C5446; margin-bottom: 8px; font-weight: 600; }}
             .season-reading {{ font-size: 12px; color: #B0A898; margin-bottom: 16px; }}
             .season-desc {{ font-size: 15px; color: #7C7466; line-height: 1.8; }}
+            .filters {{ margin-bottom: 32px; display: flex; flex-wrap: wrap; gap: 8px; }}
+            .filter-btn {{ padding: 6px 16px; border-radius: 20px; border: none; background: #F0F0F0; font-size: 12px; cursor: pointer; transition: 0.2s; }}
+            .filter-btn.active {{ background: #4A4A4A; color: white; }}
+            .item {{ margin-bottom: 40px; }}
+            .item-meta {{ margin-bottom: 8px; font-size: 11px; }}
+            .source-tag {{ background: #E0E0E0; padding: 2px 8px; border-radius: 4px; margin-right: 8px; }}
+            .item-title {{ display: block; font-size: 18px; font-weight: 600; color: #3A3A3A; text-decoration: none; margin-bottom: 8px; line-height: 1.4; }}
+            .item-summary {{ font-size: 14px; color: #666; margin-bottom: 8px; }}
+            .read-more {{ font-size: 12px; color: #A0A0A0; text-decoration: none; }}
+            .footer {{ margin-top: 80px; text-align: center; color: #B0A898; font-size: 12px; }}
         </style>
     </head>
     <body>
@@ -1108,11 +797,17 @@ body {{
                 <div class="season-desc">{seasonal_desc}</div>
             </div>
 
+            <div class="stats" style="font-size: 12px; color: #B0A898; margin-bottom: 24px;">
+                {len(all_items)}件のニュース
+            </div>
+
             {filter_buttons}
-            {items_html}
+            <div id="items-container">
+                {items_html}
+            </div>
 
             <div class="footer">
-                <div class="footer-dots">・ ・ ・</div>
+                <p>・ ・ ・</p>
                 <p>けさの手帖 － 静かにあつめています</p>
             </div>
         </div>
@@ -1126,6 +821,18 @@ body {{
                     .catch(() => alert("エラーが発生しました。"));
             }}
         }}
+
+        // フィルタ機能
+        document.querySelectorAll('.filter-btn').forEach(btn => {{
+            btn.addEventListener('click', () => {{
+                const filter = btn.dataset.filter;
+                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
+                btn.classList.add('active');
+                document.querySelectorAll('.item').forEach(item => {{
+                    item.style.display = (filter === 'all' || item.dataset.source === filter) ? 'block' : 'none';
+                }});
+            }});
+        }});
         </script>
     </body>
     </html>
@@ -1133,3 +840,8 @@ body {{
 
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
+
+if __name__ == "__main__":
+    # RSSフィードの取得と処理
+    items = fetch_all_feeds() # 既存の関数名に合わせてください
+    generate_html(items, "index.html")
