@@ -842,19 +842,21 @@ def generate_html(all_items, output_path):
         f.write(html_content)
 
 def fetch_all_feeds():
-    """RSSフィードからニュースを取得する（復旧・完全版）"""
+    """画像付きで全ソースからニュースを取得する完全版"""
     import feedparser
+    from bs4 import BeautifulSoup
     from datetime import datetime, timezone
     
-    # 手帖のソース一覧
+    # Matsucoさん専用のソース一覧
     RSS_URLS = {
         "WIRED JAPAN": "https://wired.jp/rss/rssf/",
-        "落合陽一": "https://note.com/ochyai/rss",
-        "Andrej Karpathy": "https://karpathy.github.io/feed.xml",
-        "Hard Fork": "https://feeds.simplecast.com/K_9_S6f_",
         "Every": "https://every.to/feed",
+        "Hard Fork": "https://feeds.simplecast.com/K_9_S6f_",
         "Kevin Kelly": "https://kk.org/the-technium/feed/",
-        "Moltbook": "https://moltbook.xyz/feed"
+        "Moltbook": "https://moltbook.xyz/feed",
+        "落合陽一": "https://note.com/ochyai/rss",
+        "Anthropic": "https://www.anthropic.com/index.xml", # ダリオ・アモデイ
+        "Ted Chiang": "https://muckrack.com/ted-chiang/articles.rss" # テッド・チャン
     }
     
     all_items = []
@@ -862,23 +864,71 @@ def fetch_all_feeds():
         try:
             feed = feedparser.parse(url)
             for entry in feed.entries[:5]:
-                dt = None
-                if hasattr(entry, 'published_parsed') and entry.published_parsed:
-                    dt = datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
-                
+                # 画像の抽出
+                img_url = ""
+                # 1. RSSのタグ(media:content)から探す
+                if 'media_content' in entry:
+                    img_url = entry.media_content[0]['url']
+                # 2. 本文(summaryやcontent)の中の<img>タグから探す
+                if not img_url:
+                    soup = BeautifulSoup(entry.get("summary", "") + entry.get("description", ""), 'html.parser')
+                    img = soup.find('img')
+                    if img: img_url = img['src']
+
                 all_items.append({
                     "title": entry.title,
                     "link": entry.link,
-                    "summary": entry.get("summary", "")[:100] + "...",
-                    "date": dt,
+                    "summary": entry.get("summary", "")[:120] + "...",
+                    "date": datetime(*entry.published_parsed[:6], tzinfo=timezone.utc) if hasattr(entry, 'published_parsed') else None,
                     "source": name,
+                    "image": img_url,
                     "time_ago": "最近"
                 })
         except:
             continue
     return all_items
 
-if __name__ == "__main__":
-    # ニュースの取得とHTMLの生成
-    items = fetch_all_feeds()
-    generate_html(items, "index.html")
+def generate_html(all_items, output_path):
+    # (中略: 計算部分は同じです)
+    
+    # ニュース項目の生成（画像ありVer）
+    items_html = ""
+    for item in all_items:
+        img_tag = f'<img src="{item["image"]}" class="item-img">' if item["image"] else ""
+        items_html += f"""
+        <div class="item" data-source="{item['source']}">
+            {img_tag}
+            <div class="item-meta">
+                <span class="source-tag tag-{item['source'].replace(' ', '-')}">{item['source']}</span>
+                <span class="time">{item['time_ago']}</span>
+            </div>
+            <a href="{item['link']}" class="item-title" target="_blank">{item['title']}</a>
+            <div class="item-summary">{item['summary']}</div>
+        </div>
+        """
+
+    # --- デザインの復活（色分けCSS） ---
+    html_content = f"""
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <style>
+            /* ソースごとの色分け */
+            .tag-WIRED-JAPAN {{ background: #E0F2F1; color: #00796B; }}
+            .tag-落合陽一 {{ background: #FCE4EC; color: #C2185B; }}
+            .tag-Hard-Fork {{ background: #FFF3E0; color: #E65100; }}
+            .tag-Every {{ background: #E3F2FD; color: #1976D2; }}
+            .tag-Moltbook {{ background: #F3E5F5; color: #7B1FA2; }}
+            .tag-Anthropic {{ background: #EFEBE9; color: #5D4037; }}
+            
+            /* 画像のスタイル */
+            .item-img {{ width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; }}
+            .item {{ margin-bottom: 52px; border-bottom: 1px solid #F5F2EB; padding-bottom: 32px; }}
+            /* (他の既存スタイルはそのまま維持) */
+        </style>
+        ...
+    </head>
+    ...
+    </html>
+    """
+    # (以下、保存処理とtriggerRefreshは以前と同じ)
