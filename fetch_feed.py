@@ -695,7 +695,7 @@ SOURCE_COLORS = {
 }
 
 def generate_html(all_items, output_path):
-    """全アイテムからHTMLページを生成"""
+    """色分け、画像、更新ボタンを含むHTMLを生成"""
     all_items.sort(key=lambda x: x["date"] or datetime.min.replace(tzinfo=timezone.utc), reverse=True)
 
     now_jst = datetime.now(JST)
@@ -706,28 +706,28 @@ def generate_html(all_items, output_path):
     hour = now_jst.hour
 
     if hour < 11:
-        greeting = "おはよう、Matsuco\U0001F44B\U0001F3FB"
+        greeting = "おはよう、Matsuco👋🏻"
     elif hour < 17:
-        greeting = "こんにちは、Matsuco\U0001F44B\U0001F3FB"
+        greeting = "こんにちは、Matsuco👋🏻"
     else:
-        greeting = "こんばんは、Matsuco\U0001F44B\U0001F3FB"
+        greeting = "こんばんは、Matsuco👋🏻"
 
     sekki, kou_name, kou_reading, seasonal_desc = get_seasonal_message()
     
     # ニュース項目の生成
     items_html = ""
     source_counts = {}
-    en_count = 0
     for item in all_items:
         source = item.get("source", "不明")
         source_counts[source] = source_counts.get(source, 0) + 1
-        if item.get("is_translated"):
-            en_count += 1
+        img_tag = f'<img src="{item["image"]}" class="item-img">' if item.get("image") else ""
+        safe_source = source.replace(' ', '-')
         
         items_html += f"""
         <div class="item" data-source="{source}">
+            {img_tag}
             <div class="item-meta">
-                <span class="source-tag">{source}</span>
+                <span class="source-tag tag-{safe_source}">{source}</span>
                 <span class="time">{item['time_ago']}</span>
             </div>
             <a href="{item['link']}" class="item-title" target="_blank">{item['title']}</a>
@@ -736,14 +736,12 @@ def generate_html(all_items, output_path):
         </div>
         """
 
-    # フィルタボタンの生成
     filter_buttons = '<div class="filters" id="filters">'
     filter_buttons += '<button class="filter-btn active" data-filter="all">ぜんぶ</button>'
     for source, count in sorted(source_counts.items(), key=lambda x: x[1], reverse=True):
         filter_buttons += f'<button class="filter-btn" data-filter="{source}">{source} <small>{count}</small></button>'
     filter_buttons += '</div>'
 
-    # HTML全体の組み立て
     html_content = f"""
     <!DOCTYPE html>
     <html lang="ja">
@@ -757,26 +755,28 @@ def generate_html(all_items, output_path):
             body {{ font-family: "Zen Maru Gothic", "Noto Serif JP", serif; background: #FFFFFF; color: #3A3A3A; line-height: 1.8; letter-spacing: 0.03em; }}
             .container {{ max-width: 640px; margin: 0 auto; padding: 52px 28px 80px; }}
             .refresh-container {{ text-align: right; margin-bottom: 24px; }}
-            .refresh-btn {{ padding: 6px 14px; border: 1px solid #ECE6D8; background: #FAF9F6; color: #A08060; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s ease; }}
-            .refresh-btn:hover {{ background: #F0EDE5; }}
+            .refresh-btn {{ padding: 6px 14px; border: 1px solid #ECE6D8; background: #FAF9F6; color: #A08060; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s; }}
             .header {{ margin-bottom: 48px; border-bottom: 1px solid #F5F2EB; padding-bottom: 24px; }}
             .greeting {{ font-size: 24px; font-weight: 500; color: #5C5446; margin-bottom: 8px; }}
             .date {{ font-size: 13px; color: #9A9284; }}
             .season-card {{ background: #FAF9F6; border-radius: 16px; padding: 32px; margin-bottom: 48px; }}
             .season-sekki {{ font-size: 13px; color: #A08060; margin-bottom: 8px; font-weight: 500; }}
             .season-kou {{ font-size: 22px; color: #5C5446; margin-bottom: 8px; font-weight: 600; }}
-            .season-reading {{ font-size: 12px; color: #B0A898; margin-bottom: 16px; }}
             .season-desc {{ font-size: 15px; color: #7C7466; line-height: 1.8; }}
-            .filters {{ margin-bottom: 32px; display: flex; flex-wrap: wrap; gap: 8px; }}
-            .filter-btn {{ padding: 6px 16px; border-radius: 20px; border: none; background: #F0F0F0; font-size: 12px; cursor: pointer; transition: 0.2s; }}
-            .filter-btn.active {{ background: #4A4A4A; color: white; }}
-            .item {{ margin-bottom: 40px; }}
-            .item-meta {{ margin-bottom: 8px; font-size: 11px; }}
-            .source-tag {{ background: #E0E0E0; padding: 2px 8px; border-radius: 4px; margin-right: 8px; }}
-            .item-title {{ display: block; font-size: 18px; font-weight: 600; color: #3A3A3A; text-decoration: none; margin-bottom: 8px; line-height: 1.4; }}
-            .item-summary {{ font-size: 14px; color: #666; margin-bottom: 8px; }}
-            .read-more {{ font-size: 12px; color: #A0A0A0; text-decoration: none; }}
-            .footer {{ margin-top: 80px; text-align: center; color: #B0A898; font-size: 12px; }}
+            .item {{ margin-bottom: 52px; border-bottom: 1px solid #F5F2EB; padding-bottom: 32px; }}
+            .item-img {{ width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; }}
+            .source-tag {{ padding: 2px 10px; border-radius: 12px; font-size: 10px; margin-right: 8px; }}
+            /* 色分け設定 */
+            .tag-WIRED-JAPAN {{ background: #E0F2F1; color: #00796B; }}
+            .tag-落合陽一 {{ background: #F5F2EB; color: #7C7466; }}
+            .tag-Hard-Fork {{ background: #FCE4EC; color: #C2185B; }}
+            .tag-Every {{ background: #E3F2FD; color: #1976D2; }}
+            .tag-Moltbook {{ background: #F3E5F5; color: #7B1FA2; }}
+            .tag-Kevin-Kelly {{ background: #EDE7F6; color: #512DA8; }}
+            .tag-Dario-Amodei {{ background: #F1F8E9; color: #33691E; }}
+            .tag-Ted-Chiang {{ background: #EFEBE9; color: #4E342E; }}
+            .item-title {{ display: block; font-size: 18px; font-weight: 600; color: #3A3A3A; text-decoration: none; margin-bottom: 8px; }}
+            .item-summary {{ font-size: 14px; color: #666; margin-bottom: 12px; }}
         </style>
     </head>
     <body>
@@ -784,70 +784,40 @@ def generate_html(all_items, output_path):
             <div class="refresh-container">
                 <button class="refresh-btn" onclick="triggerRefresh()">手帖を最新に更新する</button>
             </div>
-            
             <div class="header">
                 <div class="greeting">{greeting}</div>
                 <div class="date">{date_str} ({day_str})  {time_str} 取得</div>
             </div>
-            
             <div class="season-card">
                 <div class="season-sekki">{sekki}</div>
                 <div class="season-kou">{kou_name}</div>
-                <div class="season-reading">{kou_reading}</div>
                 <div class="season-desc">{seasonal_desc}</div>
             </div>
-
-            <div class="stats" style="font-size: 12px; color: #B0A898; margin-bottom: 24px;">
-                {len(all_items)}件のニュース
-            </div>
-
-            {filter_buttons}
-            <div id="items-container">
-                {items_html}
-            </div>
-
-            <div class="footer">
-                <p>・ ・ ・</p>
-                <p>けさの手帖 － 静かにあつめています</p>
-            </div>
+            <div id="items-container">{items_html}</div>
         </div>
-
         <script>
         function triggerRefresh() {{
             const hookUrl = "https://api.netlify.com/build_hooks/698fddd90daa0f765f996b27";
-            if (confirm("最新の情報を取得しにいきます。完了まで1〜2分かかりますが、よろしいですか？")) {{
+            if (confirm("最新の情報を取得しますか？")) {{
                 fetch(hookUrl, {{ method: 'POST' }})
-                    .then(() => alert("職人が作業を開始しました！少し待ってから再読み込みしてください。"))
+                    .then(() => alert("職人が更新を開始しました！"))
                     .catch(() => alert("エラーが発生しました。"));
             }}
         }}
-
-        // フィルタ機能
-        document.querySelectorAll('.filter-btn').forEach(btn => {{
-            btn.addEventListener('click', () => {{
-                const filter = btn.dataset.filter;
-                document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active'));
-                btn.classList.add('active');
-                document.querySelectorAll('.item').forEach(item => {{
-                    item.style.display = (filter === 'all' || item.dataset.source === filter) ? 'block' : 'none';
-                }});
-            }});
-        }});
         </script>
     </body>
     </html>
     """
-
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
 
 def fetch_all_feeds():
-    """画像付きで全ソースからニュースを取得する完全版"""
+    """画像付きで全ソースからニュースを取得"""
     import feedparser
     from bs4 import BeautifulSoup
     from datetime import datetime, timezone
     
-    RSS_URLS = {
+    RSS_URLS = {{
         "WIRED JAPAN": "https://wired.jp/rss/rssf/",
         "Every": "https://every.to/feed",
         "Hard Fork": "https://feeds.simplecast.com/K_9_S6f_",
@@ -856,7 +826,7 @@ def fetch_all_feeds():
         "落合陽一": "https://note.com/ochyai/rss",
         "Dario Amodei": "https://www.anthropic.com/index.xml",
         "Ted Chiang": "https://muckrack.com/ted-chiang/articles.rss"
-    }
+    }}
     
     all_items = []
     for name, url in RSS_URLS.items():
@@ -864,15 +834,13 @@ def fetch_all_feeds():
             feed = feedparser.parse(url)
             for entry in feed.entries[:5]:
                 img_url = ""
-                # 画像の抽出ロジック
-                if 'media_content' in entry:
-                    img_url = entry.media_content[0]['url']
+                if 'media_content' in entry: img_url = entry.media_content[0]['url']
                 if not img_url:
                     soup = BeautifulSoup(entry.get("summary", "") + entry.get("description", ""), 'html.parser')
                     img = soup.find('img')
                     if img: img_url = img['src']
 
-                all_items.append({
+                all_items.append({{
                     "title": entry.title,
                     "link": entry.link,
                     "summary": entry.get("summary", "")[:120] + "...",
@@ -880,72 +848,9 @@ def fetch_all_feeds():
                     "source": name,
                     "image": img_url,
                     "time_ago": "最近"
-                })
-        except:
-            continue
+                }})
+        except: continue
     return all_items
-
-def generate_html(all_items, output_path):
-    """色分けと画像表示を含むHTML生成"""
-    # ... (前述の greeting や date_str の計算コードをここに維持) ...
-    
-    # アイテムごとのHTML（画像と色分けタグ付き）
-    items_html = ""
-    for item in all_items:
-        img_tag = f'<img src="{item["image"]}" class="item-img">' if item["image"] else ""
-        # ソース名から半角スペースを抜いてCSSクラス名にする
-        safe_source = item['source'].replace(' ', '-')
-        items_html += f"""
-        <div class="item" data-source="{item['source']}">
-            {img_tag}
-            <div class="item-meta">
-                <span class="source-tag tag-{safe_source}">{item['source']}</span>
-                <span class="time">{item['time_ago']}</span>
-            </div>
-            <a href="{item['link']}" class="item-title" target="_blank">{item['title']}</a>
-            <div class="item-summary">{item['summary']}</div>
-        </div>
-        """
-
-    html_content = f"""
-    <!DOCTYPE html>
-    <html lang="ja">
-    <head>
-        <style>
-            /* ソースごとの色分け設定 */
-            .tag-WIRED-JAPAN {{ background: #E0F2F1; color: #00796B; }}
-            .tag-落合陽一 {{ background: #FFF3E0; color: #E65100; }}
-            .tag-Hard-Fork {{ background: #FCE4EC; color: #C2185B; }}
-            .tag-Every {{ background: #E3F2FD; color: #1976D2; }}
-            .tag-Moltbook {{ background: #F3E5F5; color: #7B1FA2; }}
-            .tag-Kevin-Kelly {{ background: #EDE7F6; color: #512DA8; }}
-            .tag-Dario-Amodei {{ background: #F1F8E9; color: #33691E; }}
-            .tag-Ted-Chiang {{ background: #EFEBE9; color: #4E342E; }}
-
-            .item-img {{ width: 100%; height: 200px; object-fit: cover; border-radius: 12px; margin-bottom: 16px; }}
-            /* ... (他のCSSスタイル) ... */
-        </style>
-    </head>
-    <body>
-        <div class="container">
-            <div class="refresh-container">
-                <button class="refresh-btn" onclick="triggerRefresh()">手帖を最新に更新する</button>
-            </div>
-            <div id="items-container">{items_html}</div>
-        </div>
-        <script>
-        function triggerRefresh() {{
-            const hookUrl = "https://api.netlify.com/build_hooks/698fddd90daa0f765f996b27";
-            if (confirm("最新の情報を取得しますか？")) {{
-                fetch(hookUrl, {{ method: 'POST' }}).then(() => alert("職人が更新を開始しました！"));
-            }}
-        }}
-        </script>
-    </body>
-    </html>
-    """
-    with open(output_path, "w", encoding="utf-8") as f:
-        f.write(html_content)
 
 if __name__ == "__main__":
     items = fetch_all_feeds()
