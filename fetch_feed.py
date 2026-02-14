@@ -841,7 +841,44 @@ def generate_html(all_items, output_path):
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
 
+def fetch_all_feeds():
+    """RSSフィードからニュースを取得する（復旧・完全版）"""
+    import feedparser
+    from datetime import datetime, timezone
+    
+    # 手帖のソース一覧
+    RSS_URLS = {
+        "WIRED JAPAN": "https://wired.jp/rss/rssf/",
+        "落合陽一": "https://note.com/ochyai/rss",
+        "Andrej Karpathy": "https://karpathy.github.io/feed.xml",
+        "Hard Fork": "https://feeds.simplecast.com/K_9_S6f_",
+        "Every": "https://every.to/feed",
+        "Kevin Kelly": "https://kk.org/the-technium/feed/",
+        "Moltbook": "https://moltbook.xyz/feed"
+    }
+    
+    all_items = []
+    for name, url in RSS_URLS.items():
+        try:
+            feed = feedparser.parse(url)
+            for entry in feed.entries[:5]:
+                dt = None
+                if hasattr(entry, 'published_parsed') and entry.published_parsed:
+                    dt = datetime(*entry.published_parsed[:6], tzinfo=timezone.utc)
+                
+                all_items.append({
+                    "title": entry.title,
+                    "link": entry.link,
+                    "summary": entry.get("summary", "")[:100] + "...",
+                    "date": dt,
+                    "source": name,
+                    "time_ago": "最近"
+                })
+        except:
+            continue
+    return all_items
+
 if __name__ == "__main__":
-    # RSSフィードの取得と処理
-    items = fetch_all_feeds()  
+    # ニュースの取得とHTMLの生成
+    items = fetch_all_feeds()
     generate_html(items, "index.html")
