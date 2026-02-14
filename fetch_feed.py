@@ -843,5 +843,5 @@ def generate_html(all_items, output_path):
 
 if __name__ == "__main__":
     # RSSフィードの取得と処理
-    items = fetch_feeds() # 既存の関数名に合わせてください
+    items = fetch_all_feeds()  
     generate_html(items, "index.html")
