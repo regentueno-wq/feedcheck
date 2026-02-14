@@ -1,0 +1,1114 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>けさの手帖 — 2026年2月14日</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: "Zen Maru Gothic", "Noto Serif JP", "Hiragino Kaku Gothic ProN", sans-serif;
+    background: #FFFFFF;
+    color: #3A3A3A;
+    line-height: 1.8;
+    letter-spacing: 0.03em;
+}
+
+.container {
+    max-width: 640px;
+    margin: 0 auto;
+    padding: 52px 28px 80px;
+}
+
+/* === ヘッダー === */
+.header {
+    margin-bottom: 32px;
+}
+
+.greeting {
+    font-size: 26px;
+    font-weight: 700;
+    color: #2A2A2A;
+    line-height: 1.4;
+    margin-bottom: 6px;
+    font-family: "Noto Serif JP", serif;
+}
+
+.header .date {
+    font-size: 13px;
+    color: #999;
+    letter-spacing: 0.08em;
+}
+
+/* === 季節カード === */
+.season-card {
+    background: linear-gradient(135deg, #fafaf5 0%, #f5f0e8 100%);
+    border-radius: 14px;
+    padding: 20px 24px;
+    margin-bottom: 32px;
+    border: 1px solid #ece6d8;
+}
+
+.season-sekki {
+    font-size: 11px;
+    color: #A08060;
+    letter-spacing: 0.1em;
+    margin-bottom: 4px;
+}
+
+.season-kou {
+    font-size: 18px;
+    font-weight: 600;
+    color: #5A4A3A;
+    font-family: "Noto Serif JP", serif;
+    margin-bottom: 2px;
+}
+
+.season-reading {
+    font-size: 12px;
+    color: #B0A090;
+    margin-bottom: 8px;
+}
+
+.season-desc {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #7A6A5A;
+}
+
+/* === 統計 === */
+.stats {
+    display: flex;
+    gap: 20px;
+    margin-bottom: 20px;
+    font-size: 12px;
+    color: #AAA;
+}
+
+/* === フィルター === */
+.filters {
+    display: flex;
+    gap: 8px;
+    margin-bottom: 36px;
+    flex-wrap: wrap;
+}
+
+.filter-btn {
+    padding: 5px 14px;
+    border: none;
+    border-radius: 20px;
+    background: #F5F5F5;
+    color: #777;
+    font-family: inherit;
+    font-size: 12px;
+    letter-spacing: 0.04em;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.filter-btn.active {
+    background: #3A3A3A !important;
+    color: #FFF !important;
+}
+
+.filter-btn:hover:not(.active) {
+    opacity: 0.8;
+}
+
+/* === カード === */
+.feed {
+    display: flex;
+    flex-direction: column;
+    gap: 0px;
+}
+
+.card {
+    display: flex;
+    text-decoration: none;
+    color: inherit;
+    padding: 18px 20px;
+    margin-bottom: 12px;
+    border-radius: 12px;
+    border: none;
+    transition: transform 0.12s, box-shadow 0.12s;
+    gap: 16px;
+    align-items: flex-start;
+}
+
+.card:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 16px rgba(0,0,0,0.06);
+}
+
+.card-image {
+    flex-shrink: 0;
+    width: 100px;
+    height: 72px;
+    border-radius: 8px;
+    overflow: hidden;
+    background: rgba(0,0,0,0.04);
+}
+
+.card-image img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    display: block;
+}
+
+.card-content {
+    flex: 1;
+    min-width: 0;
+}
+
+.card-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: baseline;
+    margin-bottom: 4px;
+    gap: 12px;
+}
+
+.source-badge {
+    font-size: 10px;
+    font-weight: 600;
+    letter-spacing: 0.06em;
+    padding: 2px 10px;
+    border-radius: 12px;
+    display: inline-block;
+    white-space: nowrap;
+}
+
+.meta {
+    font-size: 11px;
+    color: #BBB;
+    white-space: nowrap;
+}
+
+.card-title {
+    font-size: 15px;
+    font-weight: 500;
+    line-height: 1.6;
+    margin-bottom: 4px;
+    color: #2A2A2A;
+    font-family: "Noto Serif JP", serif;
+}
+
+.card-summary {
+    font-size: 13px;
+    line-height: 1.7;
+    color: #888;
+    margin-bottom: 6px;
+}
+
+.original-text {
+    font-size: 11px;
+    color: #BBB;
+    margin-bottom: 4px;
+    line-height: 1.4;
+}
+
+.card-footer {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+
+.lang-badge {
+    display: inline-block;
+    padding: 1px 7px;
+    border-radius: 10px;
+    font-size: 10px;
+    color: #4A7FA5;
+    background: #EDF4F8;
+    letter-spacing: 0.04em;
+}
+
+.read-more {
+    font-size: 12px;
+    color: #BBB;
+    margin-left: auto;
+}
+
+/* === フッター === */
+.footer {
+    margin-top: 56px;
+    padding-top: 24px;
+    text-align: center;
+    font-size: 11px;
+    color: #CCC;
+}
+
+.footer-dots {
+    letter-spacing: 0.4em;
+    margin-bottom: 12px;
+    color: #DDD;
+}
+
+/* === モバイル === */
+@media (max-width: 600px) {
+    .container { padding: 36px 18px 60px; }
+    .greeting { font-size: 22px; }
+    .card { padding: 14px 16px; margin-bottom: 10px; flex-direction: column; gap: 10px; }
+    .card-image { width: 100%; height: 160px; }
+    .card-title { font-size: 15px; }
+    .season-card { padding: 16px 18px; }
+    .season-kou { font-size: 16px; }
+}
+</style>
+</head>
+<body>
+<div class="container">
+    <div class="header">
+        <div class="greeting">おはよう、Matsuco👋🏻</div>
+        <div class="date">2026年2月14日（土）　8:41 取得</div>
+    </div>
+
+    <div class="season-card">
+        <div class="season-sekki">立春</div>
+        <div class="season-kou">魚上氷</div>
+        <div class="season-reading">うおこおりをいずる</div>
+        <div class="season-desc">氷が割れて、その隙間から魚が飛び跳ねる頃。水の中にも春が来ます</div>
+    </div>
+
+    <div class="stats">
+        <span>46件</span>
+        <span>10つの情報源</span>
+        <span>30件を翻訳</span>
+    </div>
+
+    <div class="filters" id="filters">
+        <button class="filter-btn active" data-filter="all">ぜんぶ</button><button class="filter-btn" data-filter="ochiai_note" data-color="#F5E0CE" data-text="#8B5E3C" style="background: #F5E0CE; color: #8B5E3C">落合陽一 <span style="opacity:0.6;font-size:10px">10</span></button><button class="filter-btn" data-filter="karpathy_yt" data-color="#D4EDDA" data-text="#3D7A3D" style="background: #D4EDDA; color: #3D7A3D">Andrej Karpathy <span style="opacity:0.6;font-size:10px">5</span></button><button class="filter-btn" data-filter="hardfork" data-color="#FADCE0" data-text="#B83B46" style="background: #FADCE0; color: #B83B46">Hard Fork <span style="opacity:0.6;font-size:10px">5</span></button><button class="filter-btn" data-filter="every" data-color="#D0E5F5" data-text="#2E6B96" style="background: #D0E5F5; color: #2E6B96">Every <span style="opacity:0.6;font-size:10px">5</span></button><button class="filter-btn" data-filter="moltbook" data-color="#E4D9F2" data-text="#6B4E8B" style="background: #E4D9F2; color: #6B4E8B">Moltbook <span style="opacity:0.6;font-size:10px">1</span></button><button class="filter-btn" data-filter="amodei" data-color="#C8E6C9" data-text="#2D6A4F" style="background: #C8E6C9; color: #2D6A4F">Dario Amodei <span style="opacity:0.6;font-size:10px">5</span></button><button class="filter-btn" data-filter="technium" data-color="#D1C4E9" data-text="#5C6BC0" style="background: #D1C4E9; color: #5C6BC0">Kevin Kelly <span style="opacity:0.6;font-size:10px">5</span></button><button class="filter-btn" data-filter="tedchiang" data-color="#D7CCC8" data-text="#6D4C41" style="background: #D7CCC8; color: #6D4C41">Ted Chiang <span style="opacity:0.6;font-size:10px">5</span></button><button class="filter-btn" data-filter="wired_jp" data-color="#B2DFDB" data-text="#00695C" style="background: #B2DFDB; color: #00695C">WIRED JAPAN <span style="opacity:0.6;font-size:10px">5</span></button>
+    </div>
+
+    <div class="feed" id="feed">
+        
+        <a href="https://wired.jp/article/sz-the-man-who-invented-agi/" target="_blank" rel="noopener" class="card" data-source="wired_jp" style="background: #E0F2F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #00695C; background: #B2DFDB">WIRED JAPAN</span>
+                    <span class="meta">WIRED　1時間前</span>
+                </div>
+                <h3 class="card-title">「AGI（汎用人工知能）」という言葉を生み出した男</h3>
+                
+                <p class='card-summary'>いまから70年前のダートマス会議において「人工知能（AI）」という言葉が初めて誕生したことはよく知られたエピソードだ。では、「Artificial General Intelligence」はどのように名付けられたのか？</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.nytimes.com/column/hard-fork" target="_blank" rel="noopener" class="card" data-source="hardfork" style="background: #FFF0F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #B83B46; background: #FADCE0">Hard Fork</span>
+                    <span class="meta">Podcast　11時間前</span>
+                </div>
+                <h3 class="card-title">「何か大きなことが起こっている」 + A.I.ロマンス小説業界を揺るがす + 一つ良いこと</h3>
+                <p class="original-text">原文: ‘Something Big Is Happening’ + A.I. Rocks the Romance Novel Industry + One Good Thing</p>
+                <p class='card-summary'>「私たちは、AI とその行く末についての人々の感情や感覚が転換点に達しつつあると考えています。」</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://wired.jp/article/best-apple-tv-plus-shows-2026/" target="_blank" rel="noopener" class="card" data-source="wired_jp" style="background: #E0F2F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #00695C; background: #B2DFDB">WIRED JAPAN</span>
+                    <span class="meta">WIRED　15時間前</span>
+                </div>
+                <h3 class="card-title">『ハイジャック』や『プルリブス』など──Apple TVのおすすめドラマ・番組40選【2026年最新】</h3>
+                
+                <p class='card-summary'>『マーダーボット』、『サイロ』や『ダウン・セメタリー・ロード』など、話題作から隠れた名作まで充実のラインアップを誇るApple TVのドラマシリーズ。このなかから、あなたの新しいお気に入り作品が見つかるかもしれない。</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://note.com/ochyai/n/n6aa9a2a161a8" target="_blank" rel="noopener" class="card" data-source="ochiai_note" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://assets.st-note.com/production/uploads/images/251367525/rectangle_large_type_2_7b0cbd15ce97dbbc3d0a4b23c9bf1369.png?width=800" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">note　19時間前</span>
+                </div>
+                <h3 class="card-title">PoliTech：政党にも企業にもよらない政治のデジタル化――オープンソース・エージェントレディな政治テクノロジー基盤の国際比較分析</h3>
+                
+                <p class='card-summary'>PoliTech: Non-Partisan, Non-Corporate Digitalization of Politics — A Comparative Analysis of Open-Source, Agent-Ready Political Technology Infrastructure 続きをみる</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://note.com/ochyai/n/n66d8d67242bf" target="_blank" rel="noopener" class="card" data-source="ochiai_note" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://assets.st-note.com/production/uploads/images/251357016/rectangle_large_type_2_76cb4ac6db6d1414bd476e653d61c5d0.png?width=800" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">note　20時間前</span>
+                </div>
+                <h3 class="card-title">「政党・企業によらない」政治のデジタル化オープンソース基盤「Open Japan PoliTech Platform」をつくってみた　#OJPP</h3>
+                
+                <p class='card-summary'>Claude Codeのエージェントモードが爆速なのでユーティリティがすぐ作れるようになったことは素晴らしいことだ，と思っていた．私は計算機が即今の道具になる世界をマタギドライブといって探求してるんだけれどもその中で昨今気になっていたことが一つありまして． 続きをみる</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://wired.jp/article/how-iphones-made-a-surprising-comeback-in-china/" target="_blank" rel="noopener" class="card" data-source="wired_jp" style="background: #E0F2F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #00695C; background: #B2DFDB">WIRED JAPAN</span>
+                    <span class="meta">WIRED　23時間前</span>
+                </div>
+                <h3 class="card-title">iPhoneが中国で“予想外の再浮上”を遂げた理由</h3>
+                
+                <p class='card-summary'>ファーウェイやシャオミのフラッグシップ端末は、印象的な機能を多く搭載している。それでも、少なくともいまのところ、アップルは中国のスマートフォン市場で再び優位に立っている。</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=_eo14o8E_oY" target="_blank" rel="noopener" class="card" data-source="ochiai_yt" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://i.ytimg.com/vi/_eo14o8E_oY/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&amp;rs=AOn4CLB_n5Nv6yj89_4runNKs9wsY7gYaQ" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">YouTube　1日前</span>
+                </div>
+                <h3 class="card-title">「生きるか死ぬかだった」アンジェラ・アキが初告白、心を押し殺した「闇の時代」とは？活動休止と再出発の裏側【落合陽一】</h3>
+                
+                <p class='card-summary'>📺 NewsPicks /ニューズピックス</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://wired.jp/article/openai-drops-io-branding-hardware-devices/" target="_blank" rel="noopener" class="card" data-source="wired_jp" style="background: #E0F2F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #00695C; background: #B2DFDB">WIRED JAPAN</span>
+                    <span class="meta">WIRED　1日前</span>
+                </div>
+                <h3 class="card-title">OpenAI、AIデバイス名「io」を使用せず。商標訴訟の提出書類で判明</h3>
+                
+                <p class='card-summary'>商標権侵害訴訟に関連する提出書類から、OpenAIがAIハードウェア製品に「io」の名称を使用しない方針であること、さらに初のハードウェア製品は2027年まで出荷されない見通しであることが明らかになった。</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://wired.jp/article/sz-ai-startup-interview-founders/" target="_blank" rel="noopener" class="card" data-source="wired_jp" style="background: #E0F2F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #00695C; background: #B2DFDB">WIRED JAPAN</span>
+                    <span class="meta">WIRED　1日前</span>
+                </div>
+                <h3 class="card-title">AIスタートアップのつくり方──大胆に、奇妙に、そしておそらく失敗する現実を受け入れよ</h3>
+                
+                <p class='card-summary'>何千人もの起業家が、AIによって経済の革命を起こそうとしている。</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://note.com/ochyai/n/n6d470a8f0f75" target="_blank" rel="noopener" class="card" data-source="ochiai_note" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://assets.st-note.com/production/uploads/images/249803741/rectangle_large_type_2_52526007d76e5b3fa3ed73774593b77b.jpeg?width=800" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">note　6日前</span>
+                </div>
+                <h3 class="card-title">計算機自然からマタギドライヴへ——「自然」の再審と脱人間知性的文明論の10年</h3>
+                
+                <p class='card-summary'>【概要】 計算機自然（Digital Nature）は2015年の提唱から10年を経て、技術的ビジョンから存在論的命題へと変容した。本論文はこの変容を三つの軸で検証する。第一に、「自然」概念の言語的・宗教的考古学を遂行し、physis・natura・じねん・Natur・ṭabī&#x27;a・prakṛtiの各語が負う存在論的前提の差異を析出する。第二に、Simondonのトランスダクション概念を軸に、波動から物質へ、データから知覚へ、身体からデータへという領域横断的変換として計算機自然を再定式化する。第三に、『魔法の世紀』『デジタルネイチャー』『マタギドライヴ』の三部作を弁証法的三段階——肯定・統合・</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.nytimes.com/column/hard-fork" target="_blank" rel="noopener" class="card" data-source="hardfork" style="background: #FFF0F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #B83B46; background: #FADCE0">Hard Fork</span>
+                    <span class="meta">Podcast　1週間前</span>
+                </div>
+                <h3 class="card-title">イーロン・マスクのメガ合併 + Google の Project Genie をテスト + Moltbook Creator の次の展開</h3>
+                <p class="original-text">原文: Elon Musk’s Mega-Merger + We Test Google’s Project Genie + What’s Next for Moltbook Creator</p>
+                <p class='card-summary'>「SpaceX の非常に価値が高く収益性の高い企業が、xAI という名前の現金炉を買収しました。」</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://note.com/ochyai/n/n1d2933ffb9ae" target="_blank" rel="noopener" class="card" data-source="ochiai_note" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://assets.st-note.com/production/uploads/images/249412563/rectangle_large_type_2_f69b44af9f3f15eee043c2983f49b1bd.jpeg?width=800" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">note　1週間前</span>
+                </div>
+                <h3 class="card-title">納棺式/告別式：追悼４＆５日目</h3>
+                
+                <p class='card-summary'>教会福音讃美歌446：神ともにいまして（２） 荒野をゆくときも、嵐吹くときも、 ゆくてをしめして、たえず導きませ。 また会う日まで、また会う日まで、 神のまもり　汝が身を離れざれ。 「また会う日まで、また会う日まで」の歌詞がいつも葬式のときに頭から離れない．家族を霊南坂教会で送るのは実は３回目．私は仏教と神道のプロジェクトをたくさんやっているのだけれど実家はキリスト教．父の葬儀に際し祖父と祖母のことを調べていたら祖母は賀川豊彦の影響を受けて一緒に全国の巡回をしていたという話を聞きました．なるほど．まぁ父を暗記しようと聖書覚えているくらいだったので，この葬式でよかったかなと思いながら過ごしました</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.nytimes.com/column/hard-fork" target="_blank" rel="noopener" class="card" data-source="hardfork" style="background: #FFF0F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #B83B46; background: #FADCE0">Hard Fork</span>
+                    <span class="meta">Podcast　1週間前</span>
+                </div>
+                <h3 class="card-title">モルトブックマニアの解説</h3>
+                <p class="original-text">原文: Moltbook Mania Explained</p>
+                <p class='card-summary'>今年はインターネットが永遠に変わる年でしょうか?</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://kk.org/thetechnium/six-selfish-reasons-to-have-kids/" target="_blank" rel="noopener" class="card" data-source="technium" style="background: #EDE7F6">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #5C6BC0; background: #D1C4E9">Kevin Kelly</span>
+                    <span class="meta">The Technium　1週間前</span>
+                </div>
+                <h3 class="card-title">子供を持つべき6つの利己的な理由</h3>
+                <p class="original-text">原文: Six Selfish Reasons to Have Kids</p>
+                <p class='card-summary'>1960 年に避妊薬が販売されるまで、子供を産むのに理由は必要ありませんでした。それはセックスの生物学的な結果であり、文化的なデフォルトでもありました。子供を持たない理由はそれだけでした。さて、その後… 続きを読む →</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://note.com/ochyai/n/n14c8531759d6" target="_blank" rel="noopener" class="card" data-source="ochiai_note" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://assets.st-note.com/production/uploads/images/248890981/rectangle_large_type_2_9e1afce7c449c5fb47721d5ca427a116.png?width=800" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">note　1週間前</span>
+                </div>
+                <h3 class="card-title">家族から見て信彦伝説について考える，父を悼んで３日目</h3>
+                
+                <p class='card-summary'>父の逝去に際し，ご丁重なご弔意ならびに温かいお言葉を賜り，誠にありがとうございます． 現在，父は家族とともに静かに過ごしており，葬儀を迎えるまでの時間を穏やかに見守っております． 三日ほどが経ち，私自身も，父を偲びながら日々の営みや思考に少しずつ立ち戻りつつあります． 今週は，父を悼みつつ，折に触れて文章を綴る機会が増えるかと存じますが，その折はご寛恕のうえお付き合いいただけましたら幸いです．何か心に留まることがございましたら，ご一言お寄せいただければありがたく存じます． 父は毀誉褒貶の多い人物であり，人によっては薫陶を受けたと語られる一方，人によっては距離を置かれたこともありました．その姿を</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=CVNoHpOLRE8" target="_blank" rel="noopener" class="card" data-source="ochiai_yt" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://i.ytimg.com/vi/CVNoHpOLRE8/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&amp;rs=AOn4CLBk0caVh9cgf3mHMo37UrbJxWqtrg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">YouTube　2週間前</span>
+                </div>
+                <h3 class="card-title">「高市政権を認めるか、認めないか」だけではない。衆院選は「推し活のゲーム」今後&quot;保守&quot;の定義は変わる？声なき声が顕在化する社会の分断構造とは【先崎彰容、落合陽一】</h3>
+                
+                <p class='card-summary'>📺 NewsPicks /ニューズピックス</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.nytimes.com/column/hard-fork" target="_blank" rel="noopener" class="card" data-source="hardfork" style="background: #FFF0F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #B83B46; background: #FADCE0">Hard Fork</span>
+                    <span class="meta">Podcast　2週間前</span>
+                </div>
+                <h3 class="card-title">技術者はICEと格闘し、ケイシーは危険な新しいAIであるClawdbotを試すアシスタント + HatGPT</h3>
+                <p class="original-text">原文: Tech Grapples With ICE + Casey Tries Clawdbot, a Risky New A.I. Assistant + HatGPT</p>
+                <p class='card-summary'>ミネアポリスでは、電話対電話の戦いとなった。</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://kk.org/thetechnium/the-march-of-nines/" target="_blank" rel="noopener" class="card" data-source="technium" style="background: #EDE7F6">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #5C6BC0; background: #D1C4E9">Kevin Kelly</span>
+                    <span class="meta">The Technium　2週間前</span>
+                </div>
+                <h3 class="card-title">ナインズの行進</h3>
+                <p class="original-text">原文: The March of Nines</p>
+                <p class='card-summary'>現代世界では、私たちは物事を頻繁に測定します。さらに改善には数値が与えられるため、品質と進捗状況を測定できます。たとえば、雨が降った後の水タンクの満水率が 90%、または粉末の満水率が 99% であると指定できます。 … 続きを読む →</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://kk.org/thetechnium/weekly-links-01-23-2026/" target="_blank" rel="noopener" class="card" data-source="technium" style="background: #EDE7F6">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #5C6BC0; background: #D1C4E9">Kevin Kelly</span>
+                    <span class="meta">The Technium　3週間前</span>
+                </div>
+                <h3 class="card-title">ウィークリーリンク、2026 年 1 月 23 日</h3>
+                <p class="original-text">原文: Weekly Links, 01/23/2026</p>
+                <p class='card-summary'>最初の AI 世代のビデオはもう一度見る価値があると感じました。とても鋭いですね。セブルス・スネイプ – ALWAYS (ホグワーツでのライブ) 🔥🔥🔥</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.nytimes.com/column/hard-fork" target="_blank" rel="noopener" class="card" data-source="hardfork" style="background: #FFF0F1">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #B83B46; background: #FADCE0">Hard Fork</span>
+                    <span class="meta">Podcast　3週間前</span>
+                </div>
+                <h3 class="card-title">ChatGPT 広告は OpenAI を変えるでしょうか? + アマンダ・アスケルがクロードの新憲法を説明</h3>
+                <p class="original-text">原文: Will ChatGPT Ads Change OpenAI? + Amanda Askell Explains Claude&#x27;s New Constitution</p>
+                <p class='card-summary'>「問題は、OpenAI による最初の 2 つの広告が良いものになるかどうかではありません。それは、2 年後か 3 年後、ChatGPT が広告に適したトピックに舵を切っているかどうかです。」</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=gi_EDUK8J2w" target="_blank" rel="noopener" class="card" data-source="ochiai_yt" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://i.ytimg.com/vi/gi_EDUK8J2w/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&amp;rs=AOn4CLCCRkhh0YmIFkKAyy76culfP9xlvA" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">YouTube　4週間前</span>
+                </div>
+                <h3 class="card-title">【落合陽一の全思考を言語化】思考の軸となる「７つの掟」／落合流のAI活用術とは／VRで超集中モードに／クリエイティビティは湖畔で宿る／空腹こそが覚醒の鍵／【MY LAWS】</h3>
+                
+                <p class='card-summary'>📺 PIVOT 公式チャンネル</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=36h5VJeQPtI" target="_blank" rel="noopener" class="card" data-source="ochiai_yt" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://i.ytimg.com/vi/36h5VJeQPtI/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&amp;rs=AOn4CLBibcZ06lWwqQV63qskhQZQoAylYA" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">YouTube　4週間前</span>
+                </div>
+                <h3 class="card-title">【落合陽一を全解剖】思考は二層で回す／人を伸ばすのは好奇心／5年に一度の人生レビュー／締切の日までに70点に／落合流の時間術／好奇心を潰すのは時間管理／子どもの教育方法【MY LAWS（後編）】</h3>
+                
+                <p class='card-summary'>📺 PIVOT 公式チャンネル</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://kk.org/thetechnium/weekly-links-01-09-2026/" target="_blank" rel="noopener" class="card" data-source="technium" style="background: #EDE7F6">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #5C6BC0; background: #D1C4E9">Kevin Kelly</span>
+                    <span class="meta">The Technium　1ヶ月前</span>
+                </div>
+                <h3 class="card-title">ウィークリーリンク、2026 年 1 月 9 日</h3>
+                <p class="original-text">原文: Weekly Links, 01/09/2026</p>
+                <p class='card-summary'>技術者だけでなく家族や子供向けの工場見学である産業観光は、特に中国で流行しつつある。良い記事: 中国で最もホットなチケットをめぐるタイガーママの戦い: 工場現場のツアー</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://kk.org/thetechnium/how-will-the-miracle-happen-today/" target="_blank" rel="noopener" class="card" data-source="technium" style="background: #EDE7F6">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #5C6BC0; background: #D1C4E9">Kevin Kelly</span>
+                    <span class="meta">The Technium　1ヶ月前</span>
+                </div>
+                <h3 class="card-title">今日、奇跡はどのように起こるでしょうか？</h3>
+                <p class="original-text">原文: How Will the Miracle Happen Today?</p>
+                <p class='card-summary'>20代の頃は毎日ヒッチハイクで通勤していました。ニュージャージー州の国道 22 号線まで 3 ブロック歩き、親指を突き出して車が来るのを待ちました。いつも誰かが私を迎えに来てくれました。 … 続きを読む →</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=61rdNc0ybLI" target="_blank" rel="noopener" class="card" data-source="ochiai_yt" style="background: #FFF5ED">
+            <div class="card-image"><img src="https://i.ytimg.com/vi/61rdNc0ybLI/hq720.jpg?sqp=-oaymwEXCNAFEJQDSFryq4qpAwkIARUAAIhCGAE=&amp;rs=AOn4CLBdNa-XFoG8KVh3K9FJ7p_H8J4PYg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #8B5E3C; background: #F5E0CE">落合陽一</span>
+                    <span class="meta">YouTube　2ヶ月前</span>
+                </div>
+                <h3 class="card-title">【落合陽一】なぜ優秀な若手は辞めていくのか？「時間管理」から「ストレス管理」へ、組織を劇的に変える働き方の未来【切り抜き】（あすか会議2015より）</h3>
+                
+                <p class='card-summary'>📺 GLOBIS学び放題×知見録</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=EWvNQjAaOHw" target="_blank" rel="noopener" class="card" data-source="karpathy_yt" style="background: #EFF8EF">
+            <div class="card-image"><img src="https://i2.ytimg.com/vi/EWvNQjAaOHw/hqdefault.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #3D7A3D; background: #D4EDDA">Andrej Karpathy</span>
+                    <span class="meta">YouTube　11ヶ月前</span>
+                </div>
+                <h3 class="card-title">LLM の使用方法</h3>
+                <p class="original-text">原文: How I use LLMs</p>
+                <p class='card-summary'>LLM に関する私の一般向けシリーズへの新しいエントリーとして、大規模言語モデルとそれに関連する機能の増え続けるリストを例に基づいて実践的に説明します。このより実践的なフォローアップでは、私自身の生活の中で LLM を使用するさまざまな方法について説明します。
+
+章
+00:00:00 成長へのイントロ</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=7xTGNNLPyMI" target="_blank" rel="noopener" class="card" data-source="karpathy_yt" style="background: #EFF8EF">
+            <div class="card-image"><img src="https://i4.ytimg.com/vi/7xTGNNLPyMI/hqdefault.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #3D7A3D; background: #D4EDDA">Andrej Karpathy</span>
+                    <span class="meta">YouTube　12ヶ月前</span>
+                </div>
+                <h3 class="card-title">ChatGPT などの LLM について詳しく知る</h3>
+                <p class="original-text">原文: Deep Dive into LLMs like ChatGPT</p>
+                <p class='card-summary'>これは、ChatGPT および関連製品を強化するラージ言語モデル (LLM) AI テクノロジについて詳しく説明する一般向けの内容です。これは、モデルの開発方法に関する完全なトレーニング スタックと、モデルの「心理学」について考える方法、およびそれらを最大限に活用する方法に関するメンタル モデルをカバーしています。</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=l8pRSuU81PU" target="_blank" rel="noopener" class="card" data-source="karpathy_yt" style="background: #EFF8EF">
+            <div class="card-image"><img src="https://i1.ytimg.com/vi/l8pRSuU81PU/hqdefault.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #3D7A3D; background: #D4EDDA">Andrej Karpathy</span>
+                    <span class="meta">YouTube　20ヶ月前</span>
+                </div>
+                <h3 class="card-title">GPT-2(124M)を再現してみよう</h3>
+                <p class="original-text">原文: Let&#x27;s reproduce GPT-2 (124M)</p>
+                <p class='card-summary'>GPT-2(124M)を一から再現しました。このビデオではプロセス全体を説明しています。まず GPT-2 ネットワークを構築し、次にそのトレーニングを非常に高速になるように最適化します。次に、GPT-2 および GPT-3 の論文とそのハイパーパラメーターに従ってトレーニングの実行を設定し、次に実行を押して、次の m に戻ります。</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=zduSFxRajkE" target="_blank" rel="noopener" class="card" data-source="karpathy_yt" style="background: #EFF8EF">
+            <div class="card-image"><img src="https://i3.ytimg.com/vi/zduSFxRajkE/hqdefault.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #3D7A3D; background: #D4EDDA">Andrej Karpathy</span>
+                    <span class="meta">YouTube　24ヶ月前</span>
+                </div>
+                <h3 class="card-title">GPT トークナイザーを構築しましょう</h3>
+                <p class="original-text">原文: Let&#x27;s build the GPT Tokenizer</p>
+                <p class='card-summary'>トークナイザーは、大規模言語モデル (LLM) の必須かつ普及したコンポーネントであり、文字列とトークン (テキスト チャンク) の間で変換を行います。トークナイザーは、LLM パイプラインの完全に別個のステージです。トークナイザーには、独自のトレーニング セット、トレーニング アルゴリズム (バイト ペア エンコーディング)、およびその後のトレーニング セットがあります。</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.youtube.com/watch?v=zjkBMFhNj_g" target="_blank" rel="noopener" class="card" data-source="karpathy_yt" style="background: #EFF8EF">
+            <div class="card-image"><img src="https://i3.ytimg.com/vi/zjkBMFhNj_g/hqdefault.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #3D7A3D; background: #D4EDDA">Andrej Karpathy</span>
+                    <span class="meta">YouTube　27ヶ月前</span>
+                </div>
+                <h3 class="card-title">[1 時間のトーク] 大規模言語モデルの概要</h3>
+                <p class="original-text">原文: [1hr Talk] Intro to Large Language Models</p>
+                <p class='card-summary'>これは、ChatGPT、Claude、Bard などのシステムの背後にある中核的な技術コンポーネントである大規模言語モデルについての 1 時間の一般向け入門です。それらが何であるか、どこに向かっているのか、現在のオペレーティング システムとの比較と類似点、およびこのオペレーティング システムのセキュリティ関連の課題のいくつかについて説明します。</p>
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://every.to/p/how-claude-code-is-transforming-finance-without-turning-you-into-a-coder" target="_blank" rel="noopener" class="card" data-source="every" style="background: #EDF5FB">
+            <div class="card-image"><img src="https://d24ovhgu8s7341.cloudfront.net/uploads/post/cover/3938/full_page_cover_Claude_Code_Finance_Fixed.png" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2E6B96; background: #D0E5F5">Every</span>
+                    <span class="meta">Newsletter　最近</span>
+                </div>
+                <h3 class="card-title">Claude Code はプログラマーにならずに金融をどのように変革するのか</h3>
+                <p class="original-text">原文: How Claude Code Is Transforming Finance—Without Turning You Into a Coder</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://every.to/podcast/inside-openai-s-agentic-browser-atlas" target="_blank" rel="noopener" class="card" data-source="every" style="background: #EDF5FB">
+            <div class="card-image"><img src="https://d24ovhgu8s7341.cloudfront.net/uploads/post/cover/3937/full_page_cover_Browser_Atlas_01.png" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2E6B96; background: #D0E5F5">Every</span>
+                    <span class="meta">Newsletter　最近</span>
+                </div>
+                <h3 class="card-title">OpenAI のエージェント ブラウザ Atlas の内部</h3>
+                <p class="original-text">原文: Inside OpenAI’s Agentic Browser, Atlas</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://every.to/chain-of-thought/the-two-slice-team" target="_blank" rel="noopener" class="card" data-source="every" style="background: #EDF5FB">
+            <div class="card-image"><img src="https://d24ovhgu8s7341.cloudfront.net/uploads/post/cover/3939/full_page_cover_greco_roman_pizzas.png" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2E6B96; background: #D0E5F5">Every</span>
+                    <span class="meta">Newsletter　最近</span>
+                </div>
+                <h3 class="card-title">2 スライス チーム アマゾンの「ピザ 2 枚ルール」は、過去 24 年間機能しました。次の 24 年間に向けて新しいヒューリスティックが必要です。</h3>
+                <p class="original-text">原文: The Two-slice Team Amazon’s “two-pizza rule” worked for the past twenty-four years. We need a new heuristic for the next twenty-four.</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://every.to/source-code/compound-engineering-the-definitive-guide" target="_blank" rel="noopener" class="card" data-source="every" style="background: #EDF5FB">
+            <div class="card-image"><img src="https://d24ovhgu8s7341.cloudfront.net/uploads/post/cover/3934/thumbnail_Compound_Engineering__The_AI-Native_Engineering_Philosophy.png" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2E6B96; background: #D0E5F5">Every</span>
+                    <span class="meta">Newsletter　最近</span>
+                </div>
+                <h3 class="card-title">化合物エンジニアリング: 決定版ガイド</h3>
+                <p class="original-text">原文: Compound Engineering: The Definitive Guide</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://every.to/p/the-ur-model-cometh" target="_blank" rel="noopener" class="card" data-source="every" style="background: #EDF5FB">
+            <div class="card-image"><img src="https://d24ovhgu8s7341.cloudfront.net/uploads/post/cover/3933/thumbnail_cw.png" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2E6B96; background: #D0E5F5">Every</span>
+                    <span class="meta">Newsletter　最近</span>
+                </div>
+                <h3 class="card-title">ウルモデル・コメス</h3>
+                <p class="original-text">原文: The Ur-model Cometh</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.moltbook.com" target="_blank" rel="noopener" class="card" data-source="moltbook" style="background: #F5F0FA">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #6B4E8B; background: #E4D9F2">Moltbook</span>
+                    <span class="meta">Community　</span>
+                </div>
+                <h3 class="card-title">Moltbook — AIエージェントのソーシャルネットワーク（ベータ版）</h3>
+                
+                <p class='card-summary'>AIエージェント同士が交流する新しいプラットフォーム。ベータ版のため投稿はまだ少なめです。</p>
+                <div class="card-footer">
+                    
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://darioamodei.com/essay/the-adolescence-of-technology" target="_blank" rel="noopener" class="card" data-source="amodei" style="background: #EDF7F0">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2D6A4F; background: #C8E6C9">Dario Amodei</span>
+                    <span class="meta">Blog　</span>
+                </div>
+                <h3 class="card-title">テクノロジーの思春期</h3>
+                <p class="original-text">原文: The Adolescence of Technology</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://darioamodei.com/essay/machines-of-loving-grace" target="_blank" rel="noopener" class="card" data-source="amodei" style="background: #EDF7F0">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2D6A4F; background: #C8E6C9">Dario Amodei</span>
+                    <span class="meta">Blog　</span>
+                </div>
+                <h3 class="card-title">慈悲の機械</h3>
+                <p class="original-text">原文: Machines of Loving Grace</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://darioamodei.com/post/the-urgency-of-interpretability" target="_blank" rel="noopener" class="card" data-source="amodei" style="background: #EDF7F0">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2D6A4F; background: #C8E6C9">Dario Amodei</span>
+                    <span class="meta">Blog　</span>
+                </div>
+                <h3 class="card-title">解釈可能性の緊急性</h3>
+                <p class="original-text">原文: The Urgency of Interpretability</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://darioamodei.com/post/on-deepseek-and-export-controls" target="_blank" rel="noopener" class="card" data-source="amodei" style="background: #EDF7F0">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2D6A4F; background: #C8E6C9">Dario Amodei</span>
+                    <span class="meta">Blog　</span>
+                </div>
+                <h3 class="card-title">DeepSeek と輸出規制について</h3>
+                <p class="original-text">原文: On DeepSeek and Export Controls</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://scholar.google.com/citations?user=6-e-ZBEAAAAJ&amp;hl=en" target="_blank" rel="noopener" class="card" data-source="amodei" style="background: #EDF7F0">
+            
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #2D6A4F; background: #C8E6C9">Dario Amodei</span>
+                    <span class="meta">Blog　</span>
+                </div>
+                <h3 class="card-title">Google スカラー</h3>
+                <p class="original-text">原文: Google Scholar</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.newyorker.com/culture/the-weekend-essay/why-ai-isnt-going-to-make-art" target="_blank" rel="noopener" class="card" data-source="tedchiang" style="background: #EFEBE9">
+            <div class="card-image"><img src="https://media.newyorker.com/photos/66d2195cb982c2ca0d74997b/4:3/w_1024%2Cc_limit/NY_Roomba_gif.gif" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #6D4C41; background: #D7CCC8">Ted Chiang</span>
+                    <span class="meta">The New Yorker　</span>
+                </div>
+                <h3 class="card-title">なぜA.I.アートを作るつもりはない</h3>
+                <p class="original-text">原文: Why A.I. Isn’t Going to Make Art</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.newyorker.com/science/annals-of-artificial-intelligence/will-ai-become-the-new-mckinsey" target="_blank" rel="noopener" class="card" data-source="tedchiang" style="background: #EFEBE9">
+            <div class="card-image"><img src="https://media.newyorker.com/photos/6421b50e1aec38f0f544ac9b/4:3/w_1024%2Cc_limit/Chiang_AI_Mckinsey.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #6D4C41; background: #D7CCC8">Ted Chiang</span>
+                    <span class="meta">The New Yorker　</span>
+                </div>
+                <h3 class="card-title">ウィルA.I.新しいマッキンゼーになるには?</h3>
+                <p class="original-text">原文: Will A.I. Become the New McKinsey?</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.newyorker.com/tech/annals-of-technology/chatgpt-is-a-blurry-jpeg-of-the-web" target="_blank" rel="noopener" class="card" data-source="tedchiang" style="background: #EFEBE9">
+            <div class="card-image"><img src="https://media.newyorker.com/photos/63e43df04138f62754b70bc1/4:3/w_1024%2Cc_limit/Chiang_final.gif" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #6D4C41; background: #D7CCC8">Ted Chiang</span>
+                    <span class="meta">The New Yorker　</span>
+                </div>
+                <h3 class="card-title">ChatGPT は Web のぼやけた JPEG です</h3>
+                <p class="original-text">原文: ChatGPT Is a Blurry JPEG of the Web</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.newyorker.com/culture/annals-of-inquiry/why-computers-wont-make-themselves-smarter" target="_blank" rel="noopener" class="card" data-source="tedchiang" style="background: #EFEBE9">
+            <div class="card-image"><img src="https://media.newyorker.com/photos/6012e4393fb51a04cb1fd5c0/4:3/w_1024%2Cc_limit/Chiang-AgainsttheSingularity.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #6D4C41; background: #D7CCC8">Ted Chiang</span>
+                    <span class="meta">The New Yorker　</span>
+                </div>
+                <h3 class="card-title">なぜコンピューターは自らを賢くしないのか</h3>
+                <p class="original-text">原文: Why Computers Won’t Make Themselves Smarter</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+        <a href="https://www.newyorker.com/tech/annals-of-technology/what-if-parents-loved-strangers-children-as-much-as-their-own" target="_blank" rel="noopener" class="card" data-source="tedchiang" style="background: #EFEBE9">
+            <div class="card-image"><img src="https://media.newyorker.com/photos/5a3bfca31b4b766677b8bc79/4:3/w_1024%2Cc_limit/Chiang-What-If-Parents-Loved-Strangers-Children-As-Much-As-Their-Own.jpg" alt="" loading="lazy" onerror="this.parentElement.style.display='none'"></div>
+            <div class="card-content">
+                <div class="card-header">
+                    <span class="source-badge" style="color: #6D4C41; background: #D7CCC8">Ted Chiang</span>
+                    <span class="meta">The New Yorker　</span>
+                </div>
+                <h3 class="card-title">もし親が他人の子供を自分の子供と同じように愛したらどうなるでしょうか?</h3>
+                <p class="original-text">原文: What If Parents Loved Strangers’ Children As Much As Their Own?</p>
+                
+                <div class="card-footer">
+                    <span class="lang-badge">翻訳</span>
+                    <span class="read-more">つづきを読む →</span>
+                </div>
+            </div>
+        </a>
+        
+    </div>
+
+    <div class="footer">
+        <div class="footer-dots">· · ·</div>
+        <p>けさの手帖 — 静かにあつめています</p>
+    </div>
+</div>
+
+<script>
+// ソース名のグループマッピング
+const sourceGroups = {};
+document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {
+    const f = btn.dataset.filter;
+    if (f !== 'all') {
+        if (!sourceGroups[f]) sourceGroups[f] = [f];
+    }
+});
+// 落合陽一のnoteとYTをグループ化
+sourceGroups['ochiai_note'] = ['ochiai_note', 'ochiai_yt'];
+sourceGroups['ochiai_yt'] = ['ochiai_note', 'ochiai_yt'];
+
+document.getElementById('filters').addEventListener('click', e => {
+    const btn = e.target.closest('.filter-btn');
+    if (!btn) return;
+    const filter = btn.dataset.filter;
+    document.querySelectorAll('.filter-btn').forEach(b => {
+        b.classList.remove('active');
+    });
+    btn.classList.add('active');
+    const matchKeys = sourceGroups[filter] || [filter];
+    document.querySelectorAll('.card').forEach(card => {
+        if (filter === 'all') {
+            card.style.display = '';
+        } else {
+            card.style.display = matchKeys.includes(card.dataset.source) ? '' : 'none';
+        }
+    });
+});
+</script>
+</body>
+</html>
