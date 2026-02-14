@@ -1065,128 +1065,33 @@ body {{
 </head>
 <body>
 <div class="container">
-<div class="refresh-container">
-    <button class="refresh-btn" onclick="triggerRefresh()">手帖を最新に更新する</button>
-</div>
-    <div class="header">
-        <div class="greeting">{greeting}</div>
-        <div class="date">{date_str}（{day_str}）　{time_str} 取得</div>
-    </div>
-
-    <div class="season-card">
-        <div class="season-sekki">{sekki}</div>
-        <div class="season-kou">{kou_name}</div>
-        <div class="season-reading">{kou_reading}</div>
-        <div class="season-desc">{seasonal_desc}</div>
-    </div>
-
-    <div class="stats">
-        <span>{len(all_items)}件</span>
-        <span>{len([sk for sk in source_counts if source_counts[sk] > 0])}つの情報源</span>
-        {"<span>" + str(en_count) + "件を翻訳</span>" if en_count > 0 else ""}
-    </div>
-
-    <div class="filters" id="filters">
-        {filter_buttons}
-    </div>
-
-    <div class="feed" id="feed">
-        {cards_html}
-    </div>
-
-    <div class="footer">
-        <div class="footer-dots">· · ·</div>
-        <p>けさの手帖 — 静かにあつめています</p>
-    </div>
-</div>
-
-<script>
-// 3. これを <script> のすぐ下に貼る
-function triggerRefresh() {
-    const hookUrl = "https://api.netlify.com/build_hooks/698fddd90daa0f765f996b27";
-    
-    if (confirm("最新の情報を取得しにいきます。完了まで1〜2分かかりますが、よろしいですか？")) {
-        fetch(hookUrl, { method: 'POST' })
-            .then(() => alert("職人が作業を開始しました！少し待ってから再読み込みしてください。"))
-            .catch(() => alert("エラーが発生しました。"));
-    }
-}
-// ソース名のグループマッピング
-const sourceGroups = {{}};
-document.querySelectorAll('.filter-btn[data-filter]').forEach(btn => {{
-    const f = btn.dataset.filter;
-    if (f !== 'all') {{
-        if (!sourceGroups[f]) sourceGroups[f] = [f];
-    }}
-}});
-// 落合陽一のnoteとYTをグループ化
-sourceGroups['ochiai_note'] = ['ochiai_note', 'ochiai_yt'];
-sourceGroups['ochiai_yt'] = ['ochiai_note', 'ochiai_yt'];
-
-document.getElementById('filters').addEventListener('click', e => {{
-    const btn = e.target.closest('.filter-btn');
-    if (!btn) return;
-    const filter = btn.dataset.filter;
-    document.querySelectorAll('.filter-btn').forEach(b => {{
-        b.classList.remove('active');
-    }});
-    btn.classList.add('active');
-    const matchKeys = sourceGroups[filter] || [filter];
-    document.querySelectorAll('.card').forEach(card => {{
-        if (filter === 'all') {{
-            card.style.display = '';
-        }} else {{
-            card.style.display = matchKeys.includes(card.dataset.source) ? '' : 'none';
+# 1067行目付近、<div class="container"> から下をこれに差し替え
+    html_content = f"""
+    ...（中略：これより上のHTMLはそのまま）...
+    <div class="container">
+        <div class="refresh-container">
+            <button class="refresh-btn" onclick="triggerRefresh()">手帖を最新に更新する</button>
+        </div>
+        
+        <div class="header">
+            <div class="greeting">{{greeting}}</div>
+            <div class="date">{{date_str}} ({{day_str}})  {{time_str}} 取得</div>
+        </div>
+        
+        <script>
+        function triggerRefresh() {{
+            const hookUrl = "https://api.netlify.com/build_hooks/698fddd90daa0f765f996b27";
+            
+            if (confirm("最新の情報を取得しにいきます。完了まで1〜2分かかりますが、よろしいですか？")) {{
+                fetch(hookUrl, {{ method: 'POST' }})
+                    .then(() => alert("職人が作業を開始しました！1〜2分待ってから再読み込みしてください。"))
+                    .catch(() => alert("エラーが発生しました。"));
+            }}
         }}
-    }});
-}});
-</script>
-</body>
-</html>"""
+        </script>
+    </body>
+    </html>
+    """
+    
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
-    print(f"\n🎉 HTMLファイルを生成しました: {output_path}")
-
-
-# ===================== メイン =====================
-
-def main():
-    print("=" * 50)
-    print("📰 My Daily Feed - データ取得開始")
-    print(f"⏰ {datetime.now(JST).strftime('%Y-%m-%d %H:%M')} JST")
-    print("=" * 50)
-
-    all_items = []
-
-    for key, source in SOURCES.items():
-        if source["type"] == "rss":
-            items = fetch_rss(key, source)
-            all_items.extend(items)
-        elif source["type"] == "youtube_search":
-            items = search_youtube(key, source)
-            all_items.extend(items)
-        elif key == "every":
-            items = scrape_every()
-            all_items.extend(items)
-        elif key == "moltbook":
-            items = scrape_moltbook()
-            all_items.extend(items)
-        elif key == "amodei":
-            items = scrape_amodei()
-            all_items.extend(items)
-        elif key == "tedchiang":
-            items = scrape_tedchiang()
-            all_items.extend(items)
-        time.sleep(0.5)
-
-    print(f"\n📊 合計 {len(all_items)} 件のアイテムを取得")
-
-    # 英語コンテンツを翻訳
-    translate_items(all_items)
-
-    output_path = "index.html"
-
-    generate_html(all_items, output_path)
-
-if __name__ == "__main__":
-    main()
