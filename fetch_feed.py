@@ -1159,7 +1159,7 @@ def main():
     # 英語コンテンツを翻訳
     translate_items(all_items)
 
-    output_path = "my-daily-feed.html"
+    output_path = "index.html"
 
     generate_html(all_items, output_path)
 
