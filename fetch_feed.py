@@ -1067,24 +1067,62 @@ body {{
 <div class="container">
 # 1067行目付近、<div class="container"> から下をこれに差し替え
     html_content = f"""
-    ...（中略：これより上のHTMLはそのまま）...
-    <div class="container">
-        <div class="refresh-container">
-            <button class="refresh-btn" onclick="triggerRefresh()">手帖を最新に更新する</button>
+    <!DOCTYPE html>
+    <html lang="ja">
+    <head>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <title>けさの手帖 - {date_str}</title>
+        <style>
+            @import url('https://fonts.googleapis.com/css2?family=Noto+Serif+JP:wght@300;400;500;600;700&family=Zen+Maru+Gothic:wght@400;500;700&display=swap');
+            * {{ margin: 0; padding: 0; box-sizing: border-box; }}
+            body {{ font-family: "Zen Maru Gothic", "Noto Serif JP", serif; background: #FFFFFF; color: #3A3A3A; line-height: 1.8; letter-spacing: 0.03em; }}
+            .container {{ max-width: 640px; margin: 0 auto; padding: 52px 28px 80px; }}
+            .refresh-container {{ text-align: right; margin-bottom: 24px; }}
+            .refresh-btn {{ padding: 6px 14px; border: 1px solid #ECE6D8; background: #FAF9F6; color: #A08060; border-radius: 20px; font-size: 11px; cursor: pointer; transition: all 0.3s ease; }}
+            .header {{ margin-bottom: 48px; border-bottom: 1px solid #F5F2EB; padding-bottom: 24px; }}
+            .greeting {{ font-size: 24px; font-weight: 500; color: #5C5446; margin-bottom: 8px; }}
+            .date {{ font-size: 13px; color: #9A9284; }}
+            .season-card {{ background: #FAF9F6; border-radius: 16px; padding: 32px; margin-bottom: 48px; position: relative; overflow: hidden; }}
+            .season-sekki {{ font-size: 13px; color: #A08060; margin-bottom: 8px; font-weight: 500; }}
+            .season-kou {{ font-size: 22px; color: #5C5446; margin-bottom: 8px; font-weight: 600; }}
+            .season-reading {{ font-size: 12px; color: #B0A898; margin-bottom: 16px; }}
+            .season-desc {{ font-size: 15px; color: #7C7466; line-height: 1.8; }}
+        </style>
+    </head>
+    <body>
+        <div class="container">
+            <div class="refresh-container">
+                <button class="refresh-btn" onclick="triggerRefresh()">手帖を最新に更新する</button>
+            </div>
+            
+            <div class="header">
+                <div class="greeting">{greeting}</div>
+                <div class="date">{date_str} ({day_str})  {time_str} 取得</div>
+            </div>
+            
+            <div class="season-card">
+                <div class="season-sekki">{sekki}</div>
+                <div class="season-kou">{kou_name}</div>
+                <div class="season-reading">{kou_reading}</div>
+                <div class="season-desc">{seasonal_desc}</div>
+            </div>
+
+            {filter_buttons}
+            {items_html}
+
+            <div class="footer">
+                <div class="footer-dots">・ ・ ・</div>
+                <p>けさの手帖 － 静かにあつめています</p>
+            </div>
         </div>
-        
-        <div class="header">
-            <div class="greeting">{{greeting}}</div>
-            <div class="date">{{date_str}} ({{day_str}})  {{time_str}} 取得</div>
-        </div>
-        
+
         <script>
         function triggerRefresh() {{
             const hookUrl = "https://api.netlify.com/build_hooks/698fddd90daa0f765f996b27";
-            
             if (confirm("最新の情報を取得しにいきます。完了まで1〜2分かかりますが、よろしいですか？")) {{
                 fetch(hookUrl, {{ method: 'POST' }})
-                    .then(() => alert("職人が作業を開始しました！1〜2分待ってから再読み込みしてください。"))
+                    .then(() => alert("職人が作業を開始しました！少し待ってから再読み込みしてください。"))
                     .catch(() => alert("エラーが発生しました。"));
             }}
         }}
@@ -1092,6 +1130,6 @@ body {{
     </body>
     </html>
     """
-    
+
     with open(output_path, "w", encoding="utf-8") as f:
         f.write(html_content)
